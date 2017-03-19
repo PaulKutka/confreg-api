@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:remove="all">Template for HTML email with inline image</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<p>
+    Sveiki, <span th:text="${firstName}"></span> <span th:text="${lastName}"></span>!
+</p>
+
+<p>Jūsų įvesti duomenys: </p>
+
+<ul>
+    <li>
+        Išsilavinimas: <span th:text="${educationalDegree}"></span>
+    </li>
+    <li>
+        Institucija: <span th:text="${institution}"></span>
+    </li>
+    <li>
+        Telefono numeris: <span th:text="${phoneNumber}"></span>
+    </li>
+    <li>
+        Žinutės pavadinimas: <span th:text="${messageName}"></span>
+    </li>
+    <li>
+       Autoriai ir aficiliacijos:
+        <p th:text="${messageAuthorsAndAffiliations}"></p>
+    </li>
+    <li>
+        Žinutės santrauka:
+        <p th:text="${messageSummary}"></p>
+    </li>
+</ul>
+
+
+<p>
+    Pagarbiai, <br />
+    <em>DAMMS komanda</em>
+</p>
+</body>
+</html>
