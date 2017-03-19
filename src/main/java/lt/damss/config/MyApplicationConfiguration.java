@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
 
+
 /**
  * Created by paulius on 17.3.11.
  */
@@ -22,6 +23,8 @@ public class MyApplicationConfiguration {
 
         return configurer;
     }
+
+
 
 
 }
