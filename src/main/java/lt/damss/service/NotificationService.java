@@ -19,15 +19,14 @@ import javax.mail.internet.MimeMessage;
 @Service
 public class NotificationService {
 
+    @Autowired
     private JavaMailSender mailSender;
 
     @Autowired
     private TemplateEngine templateEngine;
 
     @Autowired
-    public NotificationService(JavaMailSender javaMailSender) {
-        this.mailSender = javaMailSender;
-    }
+    public NotificationService() {}
 
     public void sendNotification(RegistrationForm form) throws MailException, MessagingException{
 
