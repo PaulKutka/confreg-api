@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletResponse;
 
 
 /**
@@ -34,7 +35,7 @@ public class MainController {
     }
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
-    public RegistrationForm registerForm(@RequestBody RegistrationForm form){
+    public RegistrationForm registerForm(@RequestBody RegistrationForm form, HttpServletResponse response){
         repository.save(form);
 
         try {
@@ -44,6 +45,9 @@ public class MainController {
             //logger.info("Error Sending Email:" + e.getMessage());
         }
 
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "Origin, Content-Type, X-Auth-Token");
        return form;
     }
 }
