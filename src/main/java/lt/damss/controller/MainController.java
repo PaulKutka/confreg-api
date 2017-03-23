@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletResponse;
 
 
 /**
@@ -33,7 +32,7 @@ public class MainController {
     }
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
-    public RegistrationForm registerForm(@RequestBody RegistrationForm form, HttpServletResponse response){
+    public RegistrationForm registerForm(@RequestBody RegistrationForm form){
         repository.save(form);
 
         try {
