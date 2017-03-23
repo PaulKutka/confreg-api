@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
  * Created by paulius on 17.3.11.
  */
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class MainController {
 
     //private Logger logger = LoggerFactory.getLogger(MainController.class);
