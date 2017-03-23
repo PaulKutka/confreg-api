@@ -4,10 +4,7 @@ import lt.damss.models.RegistrationForm;
 import lt.damss.repositories.RegistrationFormRepository;
 import lt.damss.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 
@@ -16,6 +13,7 @@ import javax.mail.MessagingException;
  * Created by paulius on 17.3.11.
  */
 @RestController
+@CrossOrigin(origins = "*")
 public class MainController {
 
     //private Logger logger = LoggerFactory.getLogger(MainController.class);
@@ -43,6 +41,8 @@ public class MainController {
             // cath error
             //logger.info("Error Sending Email:" + e.getMessage());
         }
+
+
 
        return form;
     }
