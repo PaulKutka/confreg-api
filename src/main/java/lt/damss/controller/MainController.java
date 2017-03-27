@@ -4,9 +4,12 @@ import lt.damss.models.RegistrationForm;
 import lt.damss.repositories.RegistrationFormRepository;
 import lt.damss.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.mail.MessagingException;
+import java.net.URI;
 
 
 /**
@@ -16,34 +19,51 @@ import javax.mail.MessagingException;
 @CrossOrigin(origins = "*")
 public class MainController {
 
-    //private Logger logger = LoggerFactory.getLogger(MainController.class);
+    private final RegistrationFormRepository repository;
+
+    private final NotificationService notificationService;
 
     @Autowired
-    private RegistrationFormRepository repository;
+    MainController(RegistrationFormRepository repository,
+                   NotificationService service) {
+        this.repository = repository;
+        this.notificationService = service;
+    }
 
-    @Autowired
-    private NotificationService notificationService;
 
-
-
-    @RequestMapping(value = "/", method =  RequestMethod.GET)
-    public Iterable<RegistrationForm> getHelloMessage(){
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public Iterable<RegistrationForm> getHelloMessage() {
         return repository.findAll();
     }
 
+
     @RequestMapping(value = "/post", method = RequestMethod.POST)
-    public RegistrationForm registerForm(@RequestBody RegistrationForm form){
-        repository.save(form);
+    ResponseEntity<?> registerForm(@RequestBody RegistrationForm form) {
 
         try {
+            RegistrationForm result = repository.save(form);
+
+
             notificationService.sendNotification(form);
-        } catch (MessagingException e){
-            // cath error
-            //logger.info("Error Sending Email:" + e.getMessage());
+
+//            ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("/home/paulius/Projects/confreg-api/Beans.xml");
+//
+//            RegisteredEventPublisher cvp = (RegisteredEventPublisher) context.getBean("customEventPublisher");
+//
+//            cvp.publish(form);
+
+            //Return response
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentRequest().path("/{id}")
+                    .buildAndExpand(result.getId()).toUri();
+
+            return new ResponseEntity<Object>(result, HttpStatus.OK);
+
+        } catch (Exception e) {
+
         }
 
 
-
-       return form;
+        return ResponseEntity.noContent().build();
     }
 }
