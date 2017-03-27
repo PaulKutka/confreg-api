@@ -25,13 +25,13 @@ public class RegistrationForm {
     private String messageAuthorsAndAffiliations;
     private String messageSummary;
 
-    private Long needsRoom;
+    private String needsRoom;
     private String roomType;
 
-    private Long hasEscort;
-    private Long escortWillParticipateInEvents;
+    private String hasEscort;
+    private String escortWillParticipateInEvents;
 
-    private Long needsBill;
+    private String needsBill;
     private String billInstitution;
 
 
@@ -115,11 +115,11 @@ public class RegistrationForm {
         this.messageSummary = messageSummary;
     }
 
-    public Long getNeedsRoom() {
+    public String getNeedsRoom() {
         return needsRoom;
     }
 
-    public void setNeedsRoom(Long needsRoom) {
+    public void setNeedsRoom(String needsRoom) {
         this.needsRoom = needsRoom;
     }
 
@@ -131,27 +131,27 @@ public class RegistrationForm {
         this.roomType = roomType;
     }
 
-    public Long getHasEscort() {
+    public String getHasEscort() {
         return hasEscort;
     }
 
-    public void setHasEscort(Long hasEscort) {
+    public void setHasEscort(String hasEscort) {
         this.hasEscort = hasEscort;
     }
 
-    public Long getEscortWillParticipateInEvents() {
+    public String getEscortWillParticipateInEvents() {
         return escortWillParticipateInEvents;
     }
 
-    public void setEscortWillParticipateInEvents(Long escortWillParticipateInEvents) {
+    public void setEscortWillParticipateInEvents(String escortWillParticipateInEvents) {
         this.escortWillParticipateInEvents = escortWillParticipateInEvents;
     }
 
-    public Long getNeedsBill() {
+    public String getNeedsBill() {
         return needsBill;
     }
 
-    public void setNeedsBill(Long needsBill) {
+    public void setNeedsBill(String needsBill) {
         this.needsBill = needsBill;
     }
 
