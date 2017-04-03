@@ -1,14 +1,11 @@
 package lt.damss.controller;
 
 import lt.damss.models.RegistrationForm;
-import lt.damss.repositories.RegistrationFormRepository;
-import lt.damss.service.NotificationService;
+import lt.damss.service.RegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.SecureRandom;
 
 
 /**
@@ -18,59 +15,51 @@ import java.security.SecureRandom;
 @CrossOrigin(origins = "*")
 public class MainController {
 
-    private final RegistrationFormRepository repository;
-
-    private final NotificationService notificationService;
-
-    //Variables for generating random string
-    private final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private final String appendString = "DAMSS-";
-    private final int codeLength = 8;
-    SecureRandom rnd = new SecureRandom();
-
-
     @Autowired
-    MainController(RegistrationFormRepository repository,
-                   NotificationService service) {
-        this.repository = repository;
-        this.notificationService = service;
-    }
+    private RegistrationService registrationService;
+
+//    @Autowired
+//    MainController(RegistrationService registrationService) {
+//        this.registrationService = registrationService;
+//    }
+
+
 
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public Iterable<RegistrationForm> getHelloMessage() {
-        return repository.findAll();
+    public Iterable<RegistrationForm> getAllForms() {
+        Iterable<RegistrationForm> forms = registrationService.getAllForms();
+        return forms;
     }
 
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
     ResponseEntity<?> registerForm(@RequestBody RegistrationForm form) {
 
-        try {
-            //Set unique code for a form
-            form.setUniqueCode(appendString + randomString(codeLength));
 
-            //Save form to a database
-            RegistrationForm result = repository.save(form);
-
-            //Send an email
-            notificationService.sendNotification(form);
+        RegistrationForm result = registrationService.registerForm(form);
 
 
+        if (result != null) {
             return new ResponseEntity<Object>(result, HttpStatus.OK);
-
-        } catch (Exception e) {
-            return new ResponseEntity<Object>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
 
-    }
+        return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
 
 
-    private String randomString( int len ){
-        StringBuilder sb = new StringBuilder( len );
-        for( int i = 0; i < len; i++ )
-            sb.append( AB.charAt( rnd.nextInt(AB.length()) ) );
-        return sb.toString();
     }
+
+    @RequestMapping(value = "/find", method = RequestMethod.POST)
+    ResponseEntity<?> findById(@RequestBody String uniqueCode) {
+
+           RegistrationForm result = registrationService.findByUniqueCode(uniqueCode);
+
+            if(result != null) {
+                return new ResponseEntity<Object>(result, HttpStatus.OK);
+            }
+
+            return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+    }
+
 
 }

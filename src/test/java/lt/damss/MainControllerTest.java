@@ -1,134 +1,182 @@
 package lt.damss;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lt.damss.controller.MainController;
 import lt.damss.models.RegistrationForm;
-import lt.damss.repositories.RegistrationFormRepository;
+import lt.damss.service.RegistrationService;
+import org.apache.catalina.filters.CorsFilter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.mock.http.MockHttpOutputMessage;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-/**
- * @author Josh Long
- */
-@RunWith(SpringRunner.class)
+
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = ConfregApiApplication.class)
 @WebAppConfiguration
 public class MainControllerTest {
 
 
-	private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-			MediaType.APPLICATION_JSON.getSubtype(),
-			Charset.forName("utf8"));
+    private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
+            MediaType.APPLICATION_JSON.getSubtype(),
+            Charset.forName("utf8"));
 
-	private MockMvc mockMvc;
+    private MockMvc mockMvc;
 
-	private String userName = "bdussault";
+    private List<RegistrationForm> formList = new ArrayList<>();
 
-	private HttpMessageConverter mappingJackson2HttpMessageConverter;
+    @InjectMocks
+    private MainController mainController;
 
-	private RegistrationForm form;
+    @Mock
+    private RegistrationService registrationService;
 
-	private List<RegistrationForm> formList = new ArrayList<>();
 
-	@Autowired
-	private RegistrationFormRepository repository;
+    @Autowired
+    private WebApplicationContext webApplicationContext;
 
-	@Autowired
-	private WebApplicationContext webApplicationContext;
+    @Autowired
+    private ObjectMapper mapper;
 
-	@Autowired
-	void setConverters(HttpMessageConverter<?>[] converters) {
+    @Before
+    public void setup() throws Exception {
 
-		this.mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream()
-				.filter(hmc -> hmc instanceof MappingJackson2HttpMessageConverter)
-				.findAny()
-				.orElse(null);
+        MockitoAnnotations.initMocks(this);
 
-		assertNotNull("the JSON message converter must not be null",
-				this.mappingJackson2HttpMessageConverter);
-	}
+        this.mockMvc = MockMvcBuilders.standaloneSetup(mainController).addFilters(new CorsFilter()).build();
 
-	@Before
-	public void setup() throws Exception {
-		this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
-		this.repository.deleteAll();
+        this.mapper = new ObjectMapper();
 
-		RegistrationForm firstForm = new RegistrationForm();
-		firstForm.setFirstName("Vardas");
-		firstForm.setLastName("Pavarde");
-		firstForm.setEmail("test@test");
 
-		RegistrationForm secondForm = new RegistrationForm();
-		secondForm.setFirstName("Vardenis");
-		secondForm.setLastName("Pavardenis");
-		secondForm.setEmail("testas@testas");
+        RegistrationForm firstForm = new RegistrationForm();
+        firstForm.setFirstName("Vardas");
+        firstForm.setLastName("Pavarde");
+        firstForm.setEmail("test@test");
 
-		this.formList.add(repository.save(firstForm));
-		this.formList.add(repository.save(secondForm));
-	}
+        RegistrationForm secondForm = new RegistrationForm();
+        secondForm.setFirstName("Vardenis");
+        secondForm.setLastName("Pavardenis");
+        secondForm.setEmail("testas@testas");
 
-	@Test
-	public void readForms() throws Exception {
-		this.mockMvc.perform(get("/"))
-				.andExpect(status().isOk())
-				.andExpect(content().contentType(contentType))
-				.andExpect(jsonPath("$", hasSize(2)))
-				.andExpect(jsonPath("$[0].firstName", is("Vardas")))
-				.andExpect(jsonPath("$[0].lastName", is("Pavarde")))
-				.andExpect(jsonPath("$[1].firstName", is("Vardenis")))
-				.andExpect(jsonPath("$[1].lastName", is("Pavardenis")));
+        Mockito.when(registrationService.registerForm(firstForm)).thenReturn(firstForm);
+        Mockito.when(registrationService.registerForm(secondForm)).thenReturn(secondForm);
+
+        RegistrationForm registrationForms[] = {firstForm, secondForm};
+
+//		Iterator<RegistrationForm> mockIterator = mock(Iterator.class);
+        Iterable<RegistrationForm> iterable = Arrays.asList(registrationForms);
+//
+        Mockito.when(registrationService.getAllForms()).thenReturn(iterable);
+
+
+        //Iterable<RegistrationForm> iterableAnswer = registrationService.getAllForms();
+
+        this.formList.add(registrationService.registerForm(firstForm));
+        this.formList.add(registrationService.registerForm(secondForm));
+    }
+
+    @Test
+    public void readForms() throws Exception {
+        RegistrationForm firstForm = new RegistrationForm();
+        firstForm.setFirstName("Vardas");
+        firstForm.setLastName("Pavarde");
+        firstForm.setEmail("test@test");
+
+        RegistrationForm secondForm = new RegistrationForm();
+        secondForm.setFirstName("Vardenis");
+        secondForm.setLastName("Pavardenis");
+        secondForm.setEmail("testas@testas");
+
+        RegistrationForm registrationForms[] = {firstForm, secondForm};
+
+        Iterable<RegistrationForm> iterable = Arrays.asList(registrationForms);
+
+        Mockito.when(registrationService.getAllForms()).thenReturn(iterable);
+
+        this.mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(contentType))
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].firstName", is("Vardas")))
+                .andExpect(jsonPath("$[0].lastName", is("Pavarde")))
+                .andExpect(jsonPath("$[1].firstName", is("Vardenis")))
+                .andExpect(jsonPath("$[1].lastName", is("Pavardenis")));
+
 
 //		TODO Write full test of an object
-	}
+    }
 
-	@Test
-	public void createForm() throws Exception {
-		RegistrationForm newForm = new RegistrationForm();
-		newForm.setFirstName("Vardas");
-		newForm.setLastName("Pavarde");
-		newForm.setEmail("test@test");
+
+    @Test
+    public void createForm() throws Exception {
+
+        RegistrationForm newForm = new RegistrationForm();
+        newForm.setFirstName("Vardas");
+        newForm.setLastName("Pavarde");
+        newForm.setEmail("test@test");
 
 //		TODO Write full test of an object
 
-		String bookmarkJson = json(newForm);
 
-		String expectedJson = json(newForm);
+        Mockito.when(registrationService.registerForm(any())).thenReturn(newForm);
 
-		this.mockMvc.perform(post("/post")
-				.contentType(contentType)
-				.content(bookmarkJson))
-				.andExpect(status().isOk())
-				.andExpect(content().json(expectedJson));
-	}
+        String bookmarkJson = mapper.writeValueAsString(newForm);
 
-	protected String json(Object o) throws IOException {
-		MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-		this.mappingJackson2HttpMessageConverter.write(
-				o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-		return mockHttpOutputMessage.getBodyAsString();
-	}
+        String expectedJson = mapper.writeValueAsString(newForm);
+
+        this.mockMvc.perform(post("/post")
+                .contentType(contentType)
+                .content(bookmarkJson))
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedJson));
+
+
+    }
+
+    @Test
+    public void findFormByUniqueId() throws Exception {
+        RegistrationForm newForm = new RegistrationForm();
+        newForm.setFirstName("Vardas");
+        newForm.setLastName("Pavarde");
+        newForm.setEmail("test@test");
+
+        Mockito.when(registrationService.findByUniqueCode(any())).thenReturn(newForm);
+
+
+        String uniqueCode = "Valid code";
+
+        String expectedJson = mapper.writeValueAsString(newForm);
+
+        this.mockMvc.perform(post("/find")
+                .contentType(contentType)
+                .content(uniqueCode))
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedJson));
+
+
+    }
 }
