@@ -48,6 +48,8 @@ public class NotificationService {
         ctx.setVariable("messageName", form.getMessageName());
         ctx.setVariable("messageAuthorsAndAffiliations", form.getMessageAuthorsAndAffiliations());
         ctx.setVariable("messageSummary", form.getMessageSummary());
+        String uniqueCode = form.getUniqueCode();
+        ctx.setVariable("uniqueCode", uniqueCode.toString());
 
 
 

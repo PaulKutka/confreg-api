@@ -41,6 +41,7 @@ public class MainController {
     ResponseEntity<?> registerForm(@RequestBody RegistrationForm form) {
 
         try {
+            form.setUniqueCode();
             RegistrationForm result = repository.save(form);
 
 
@@ -60,10 +61,10 @@ public class MainController {
             return new ResponseEntity<Object>(result, HttpStatus.OK);
 
         } catch (Exception e) {
-
+                return new ResponseEntity<Object>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
 
 
-        return ResponseEntity.noContent().build();
+
     }
 }

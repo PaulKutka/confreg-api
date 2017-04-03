@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by paulius on 17.3.12.
@@ -14,6 +15,12 @@ import javax.persistence.Id;
 @Entity
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class RegistrationForm {
+
+
+    //Variable for unique ID generation
+    private static AtomicLong idCounter = new AtomicLong();
+
+
     @Id
     @JsonIgnore
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -39,6 +46,7 @@ public class RegistrationForm {
     private String needsBill;
     private String billInstitution;
 
+    private String uniqueCode;
 
     public Long getId() {
         return id;
@@ -167,4 +175,14 @@ public class RegistrationForm {
     public void setBillInstitution(String billInstitution) {
         this.billInstitution = billInstitution;
     }
+
+    public String getUniqueCode() {
+        return uniqueCode;
+    }
+
+    public void setUniqueCode() {
+        this.uniqueCode = String.valueOf(idCounter.getAndIncrement());
+    }
+
+
 }
