@@ -7,9 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
+import java.security.SecureRandom;
 
 
 /**
@@ -22,6 +21,13 @@ public class MainController {
     private final RegistrationFormRepository repository;
 
     private final NotificationService notificationService;
+
+    //Variables for generating random string
+    private final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private final String appendString = "DAMSS-";
+    private final int codeLength = 8;
+    SecureRandom rnd = new SecureRandom();
+
 
     @Autowired
     MainController(RegistrationFormRepository repository,
@@ -41,30 +47,30 @@ public class MainController {
     ResponseEntity<?> registerForm(@RequestBody RegistrationForm form) {
 
         try {
-            form.setUniqueCode();
+            //Set unique code for a form
+            form.setUniqueCode(appendString + randomString(codeLength));
+
+            //Save form to a database
             RegistrationForm result = repository.save(form);
 
-
+            //Send an email
             notificationService.sendNotification(form);
 
-//            ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("/home/paulius/Projects/confreg-api/Beans.xml");
-//
-//            RegisteredEventPublisher cvp = (RegisteredEventPublisher) context.getBean("customEventPublisher");
-//
-//            cvp.publish(form);
-
-            //Return response
-            URI location = ServletUriComponentsBuilder
-                    .fromCurrentRequest().path("/{id}")
-                    .buildAndExpand(result.getId()).toUri();
 
             return new ResponseEntity<Object>(result, HttpStatus.OK);
 
         } catch (Exception e) {
-                return new ResponseEntity<Object>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<Object>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
 
-
-
     }
+
+
+    private String randomString( int len ){
+        StringBuilder sb = new StringBuilder( len );
+        for( int i = 0; i < len; i++ )
+            sb.append( AB.charAt( rnd.nextInt(AB.length()) ) );
+        return sb.toString();
+    }
+
 }
