@@ -19,12 +19,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -46,17 +43,12 @@ public class MainControllerTest {
 
     private MockMvc mockMvc;
 
-    private List<RegistrationForm> formList = new ArrayList<>();
 
     @InjectMocks
     private MainController mainController;
 
     @Mock
     private RegistrationService registrationService;
-
-
-    @Autowired
-    private WebApplicationContext webApplicationContext;
 
     @Autowired
     private ObjectMapper mapper;
@@ -71,32 +63,6 @@ public class MainControllerTest {
 
         this.mapper = new ObjectMapper();
 
-
-        RegistrationForm firstForm = new RegistrationForm();
-        firstForm.setFirstName("Vardas");
-        firstForm.setLastName("Pavarde");
-        firstForm.setEmail("test@test");
-
-        RegistrationForm secondForm = new RegistrationForm();
-        secondForm.setFirstName("Vardenis");
-        secondForm.setLastName("Pavardenis");
-        secondForm.setEmail("testas@testas");
-
-        Mockito.when(registrationService.registerForm(firstForm)).thenReturn(firstForm);
-        Mockito.when(registrationService.registerForm(secondForm)).thenReturn(secondForm);
-
-        RegistrationForm registrationForms[] = {firstForm, secondForm};
-
-//		Iterator<RegistrationForm> mockIterator = mock(Iterator.class);
-        Iterable<RegistrationForm> iterable = Arrays.asList(registrationForms);
-//
-        Mockito.when(registrationService.getAllForms()).thenReturn(iterable);
-
-
-        //Iterable<RegistrationForm> iterableAnswer = registrationService.getAllForms();
-
-        this.formList.add(registrationService.registerForm(firstForm));
-        this.formList.add(registrationService.registerForm(secondForm));
     }
 
     @Test

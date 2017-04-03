@@ -2,11 +2,11 @@ package lt.damss.controller;
 
 import lt.damss.models.RegistrationForm;
 import lt.damss.service.RegistrationService;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 
 /**
  * Created by paulius on 17.3.11.
@@ -17,12 +17,6 @@ public class MainController {
 
     @Autowired
     private RegistrationService registrationService;
-
-//    @Autowired
-//    MainController(RegistrationService registrationService) {
-//        this.registrationService = registrationService;
-//    }
-
 
 
 
@@ -52,13 +46,22 @@ public class MainController {
     @RequestMapping(value = "/find", method = RequestMethod.POST)
     ResponseEntity<?> findById(@RequestBody String uniqueCode) {
 
-           RegistrationForm result = registrationService.findByUniqueCode(uniqueCode);
+        String code = "";
 
-            if(result != null) {
-                return new ResponseEntity<Object>(result, HttpStatus.OK);
-            }
+        try {
+            JSONObject json = new JSONObject(uniqueCode);
+            code = json.getString("uniqueCode");
 
-            return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+
+        }
+        RegistrationForm result = registrationService.findByUniqueCode(code);
+
+        if (result != null) {
+            return new ResponseEntity<Object>(result, HttpStatus.OK);
+        }
+
+        return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
     }
 
 
