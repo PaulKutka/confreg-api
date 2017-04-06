@@ -40,9 +40,6 @@ dependencies {
 	testCompile('org.mockito:mockito-core:2.+')
 }
 
-task stage(dependsOn: [build])
-
-test.enabled = false
 
 jar {
 	baseName = 'confreg-api'
