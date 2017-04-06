@@ -44,10 +44,4 @@ dependencies {
 jar {
 	baseName = 'confreg-api'
 	version = '0.0.1-SNAPSHOT'
-	manifest {
-		attributes("Implementation-Title": "Gradle",
-				"Implementation-Version": version,
-				'Class-Path': configurations.compile { it.getName() }.join(' '),
-				"Main-Class": "lt.damss.ConfregApiApplication")
-	}
 }
