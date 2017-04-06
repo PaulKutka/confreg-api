@@ -16,10 +16,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 
-jar {
-	baseName = 'confreg-api'
-	version = '0.0.1-SNAPSHOT'
-}
+
 
 sourceCompatibility = 1.8
 
@@ -41,4 +38,17 @@ dependencies {
 	runtime('mysql:mysql-connector-java:5.1.41')
 	testCompile('org.springframework.boot:spring-boot-starter-test:1.5.2.RELEASE')
 	testCompile('org.mockito:mockito-core:2.+')
+}
+
+task stage(dependsOn: [build])
+
+jar {
+	baseName = 'confreg-api'
+	version = '0.0.1-SNAPSHOT'
+	manifest {
+		attributes("Implementation-Title": "Gradle",
+				"Implementation-Version": version,
+				'Class-Path': configurations.compile { it.getName() }.join(' '),
+				"Main-Class": "lt.damss.ConfregApiApplication")
+	}
 }
