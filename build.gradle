@@ -42,6 +42,8 @@ dependencies {
 
 task stage(dependsOn: [build])
 
+test.enabled = false
+
 jar {
 	baseName = 'confreg-api'
 	version = '0.0.1-SNAPSHOT'
