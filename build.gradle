@@ -1,19 +1,14 @@
 buildscript {
-	ext {
-		springBootVersion = '2.0.0.BUILD-SNAPSHOT'
-	}
 	repositories {
 		mavenCentral()
 		maven { url "https://repo.spring.io/snapshot" }
 		maven { url "https://repo.spring.io/milestone" }
 	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-	}
+
 }
 
 plugins {
-	id "com.heroku.sdk.heroku-gradle" version "0.2.0"
+	id 'org.springframework.boot' version '1.5.2.RELEASE'
 }
 
 apply plugin: 'java'
@@ -21,15 +16,15 @@ apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 
 
-task stage(dependsOn: ['build', 'clean'])
-build.mustRunAfter clean
-
-task copyToLib(type: Copy) {
-	into "$buildDir/lib"
-	from(configurations.compile)
-}
-
-stage.dependsOn(copyToLib)
+//task stage(dependsOn: ['build', 'clean'])
+//build.mustRunAfter clean
+//
+//task copyToLib(type: Copy) {
+//	into "$buildDir/lib"
+//	from(configurations.compile)
+//}
+//
+//stage.dependsOn(copyToLib)
 
 test.enabled = false
 
@@ -59,10 +54,4 @@ dependencies {
 jar {
 	baseName = 'confreg-api'
 	version = '0.0.1-SNAPSHOT'
-	manifest {
-		attributes(
-				'Class-Path': configurations.compile { it.getName() }.join(' '),
-				'Main-Class': 'lt.damss.ConfregApiApplication'
-		)
-	}
 }
