@@ -12,11 +12,26 @@ buildscript {
 	}
 }
 
+plugins {
+	id "com.heroku.sdk.heroku-gradle" version "0.2.0"
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 
 
+task stage(dependsOn: ['build', 'clean'])
+build.mustRunAfter clean
+
+task copyToLib(type: Copy) {
+	into "$buildDir/lib"
+	from(configurations.compile)
+}
+
+stage.dependsOn(copyToLib)
+
+test.enabled = false
 
 sourceCompatibility = 1.8
 
@@ -35,7 +50,7 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-thymeleaf:1.5.2.RELEASE')
 	compile ('javax.mail:mail:1.4.7')
 	compile('org.json:json:20160810')
-	runtime('mysql:mysql-connector-java:5.1.41')
+	compile('mysql:mysql-connector-java:6.0.6')
 	testCompile('org.springframework.boot:spring-boot-starter-test:1.5.2.RELEASE')
 	testCompile('org.mockito:mockito-core:2.+')
 }
@@ -44,4 +59,10 @@ dependencies {
 jar {
 	baseName = 'confreg-api'
 	version = '0.0.1-SNAPSHOT'
+	manifest {
+		attributes(
+				'Class-Path': configurations.compile { it.getName() }.join(' '),
+				'Main-Class': 'lt.damss.ConfregApiApplication'
+		)
+	}
 }
