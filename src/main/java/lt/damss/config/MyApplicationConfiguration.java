@@ -1,10 +1,6 @@
 package lt.damss.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.core.io.ClassPathResource;
 
 
 /**
@@ -12,18 +8,26 @@ import org.springframework.core.io.ClassPathResource;
  */
 @Configuration
 public class MyApplicationConfiguration {
-    @Bean
-    @Profile("development")
-    public static PropertySourcesPlaceholderConfigurer developmentPropertyPlaceholderConfigurer() {
-        String activeProfile = System.getProperty("spring.profiles.active", "production");
-        String propertiesFilename = "app-" + activeProfile + ".properties";
 
-        PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
-        configurer.setLocation(new ClassPathResource(propertiesFilename));
-
-        return configurer;
-    }
-
+//    @Bean
+//    @Autowired
+//    public EntityManagerFactory entityManagerFactory(DataSource dataSource) {
+//        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+//        vendorAdapter.setGenerateDdl(true);
+//
+//        Properties jpaProperties = new Properties();
+//        jpaProperties.setProperty("hibernate.show_sql", showsql);
+//        jpaProperties.setProperty("hibernate.dialect", dialect);
+//
+//        LocalContainerEntityManagerFactoryBean localContainerEntityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
+//        localContainerEntityManagerFactoryBean.setJpaVendorAdapter(vendorAdapter);
+//        localContainerEntityManagerFactoryBean.setPackagesToScan("your packages....");
+//        localContainerEntityManagerFactoryBean.setDataSource(dataSource);
+//        localContainerEntityManagerFactoryBean.setJpaProperties(jpaProperties);
+//        localContainerEntityManagerFactoryBean.afterPropertiesSet();
+//
+//        return localContainerEntityManagerFactoryBean.getObject();
+//    }
 
 
 
