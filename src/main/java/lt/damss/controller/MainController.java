@@ -1,16 +1,16 @@
 package lt.damss.controller;
 
 import lt.damss.models.RegistrationForm;
-import lt.damss.reports.DocReportGenerator;
-import lt.damss.reports.EmailReportGenerator;
-import lt.damss.reports.ExcelReport;
+import lt.damss.reports.*;
 import lt.damss.service.RegistrationService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 
@@ -35,9 +35,13 @@ public class MainController {
 
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
-    ResponseEntity<?> registerForm(@RequestBody RegistrationForm form) {
+    ResponseEntity<?> registerForm(@RequestBody @Valid  RegistrationForm form,
+                                   BindingResult bindingResult) {
 
-
+        //TODO: registration form sudet validacijas likusias
+        if(bindingResult.hasErrors()){
+            return null;
+        }
         RegistrationForm result = registrationService.registerForm(form);
 
 
@@ -71,90 +75,26 @@ public class MainController {
         return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
     }
 
-    @RequestMapping(value = "/file/3", method = RequestMethod.GET)
-    public HttpEntity<byte[]> downloadReport(){
-        ExcelReport rep = new ExcelReport();
+        @RequestMapping(value = "/reports/{reportName}", method = RequestMethod.GET)
+    public HttpEntity<byte[]> downloadReport(@PathVariable("reportName") String fileName){
+        ReportFactory factory = new ReportFactory();
+        AttendeeReport report = factory.getReport(fileName);
 
-        for (RegistrationForm rf :
-                registrationService.getAllForms()) {
+        if (report != null){
+            report.addAttendees( registrationService.getAllForms());
+            byte[] document = new byte[0];
+            try {
+                document = FileCopyUtils.copyToByteArray(report.getFile());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            HttpHeaders header = new HttpHeaders();
+            header.setContentType(new MediaType("application", "report"));
+            header.set("Content-Disposition", "inline; filename=" + report.getFile().getName());
+            header.setContentLength(document.length);
 
-            rep.addEntry(rf.getFirstName(), rf.getLastName(), rf.getBillInstitution(), rf.getRoomType());
+            return new HttpEntity<byte[]>(document, header);
         }
-        rep.generateReport();
-
-        File file = new File("report.xlsx");
-        byte[] document = new byte[0];
-        try {
-            document = FileCopyUtils.copyToByteArray(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        HttpHeaders header = new HttpHeaders();
-        header.setContentType(new MediaType("application", "xlsx"));
-        header.set("Content-Disposition", "inline; filename=" + file.getName());
-        header.setContentLength(document.length);
-
-        return new HttpEntity<byte[]>(document, header);
+        return null;
     }
-
-
-
-    @RequestMapping(value = "/file/2", method = RequestMethod.GET)
-    public HttpEntity<byte[]> downloadEmails(){
-        EmailReportGenerator rep = new EmailReportGenerator();
-
-        for (RegistrationForm rf :
-                registrationService.getAllForms()) {
-
-            rep.addEntry(rf.getEmail());
-        }
-        rep.generateReport();
-
-        File file = new File("emails.xlsx");
-        byte[] document = new byte[0];
-        try {
-            document = FileCopyUtils.copyToByteArray(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        HttpHeaders header = new HttpHeaders();
-        header.setContentType(new MediaType("application", "xlsx"));
-        header.set("Content-Disposition", "inline; filename=" + file.getName());
-        header.setContentLength(document.length);
-
-        return new HttpEntity<byte[]>(document, header);
-    }
-
-    @RequestMapping(value = "/file/1", method = RequestMethod.GET)
-    public HttpEntity<byte[]> downloadWord(){
-        DocReportGenerator rep = new DocReportGenerator();
-
-
-        for (RegistrationForm rf :
-                registrationService.getAllForms()) {
-            rep.addEntry(rf.getMessageName(),
-                    rf.getMessageAuthorsAndAffiliations(),
-                    rf.getMessageAuthorsAndAffiliations(),
-                    rf.getEmail(),
-                    rf.getMessageSummary());
-        }
-        rep.generateReport();
-
-        File file = new File("report.docx");
-        byte[] document = new byte[0];
-        try {
-            document = FileCopyUtils.copyToByteArray(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        HttpHeaders header = new HttpHeaders();
-        header.setContentType(new MediaType("application", "docx"));
-        header.set("Content-Disposition", "inline; filename=" + file.getName());
-        header.setContentLength(document.length);
-
-        return new HttpEntity<byte[]>(document, header);
-    }
-
-
-
 }
