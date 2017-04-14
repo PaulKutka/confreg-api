@@ -25,7 +25,6 @@ public class MainController {
     private RegistrationService registrationService;
 
 
-
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public Iterable<RegistrationForm> getAllForms() {
         Iterable<RegistrationForm> forms = registrationService.getAllForms();
@@ -35,11 +34,11 @@ public class MainController {
 
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
-    ResponseEntity<?> registerForm(@RequestBody @Valid  RegistrationForm form,
+    ResponseEntity<?> registerForm(@RequestBody @Valid RegistrationForm form,
                                    BindingResult bindingResult) {
 
-        //TODO: registration form sudet validacijas likusias
-        if(bindingResult.hasErrors()){
+        //TODO: RegistrationForm.java sudet likusias validacijas
+        if (bindingResult.hasErrors()) {
             return null;
         }
         RegistrationForm result = registrationService.registerForm(form);
@@ -53,6 +52,35 @@ public class MainController {
 
 
     }
+
+    @RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)
+    ResponseEntity<?> updateForm(@PathVariable("id") Long id,
+                                 @RequestBody @Valid RegistrationForm form,
+                                 BindingResult bindingResult){
+
+
+        if (bindingResult.hasErrors()){
+            return new ResponseEntity<Object>(HttpStatus.valueOf(400));
+
+        }
+        RegistrationForm result = registrationService.updateForm(id, form);
+        return new ResponseEntity<Object>(result, HttpStatus.OK);
+
+    }
+
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
+    ResponseEntity<?> deleteForm(@PathVariable("id") Long id) {
+
+        try {
+            RegistrationForm result = registrationService.deleteForm(id);
+            return new ResponseEntity<Object>(result, HttpStatus.OK);
+
+        } catch (Exception e) {
+
+        }
+        return new ResponseEntity<Object>(HttpStatus.EXPECTATION_FAILED);
+    }
+
 
     @RequestMapping(value = "/find", method = RequestMethod.POST)
     ResponseEntity<?> findById(@RequestBody String uniqueCode) {
@@ -75,13 +103,14 @@ public class MainController {
         return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
     }
 
-        @RequestMapping(value = "/reports/{reportName}", method = RequestMethod.GET)
-    public HttpEntity<byte[]> downloadReport(@PathVariable("reportName") String fileName){
+    //TODO: repotu generavimas neveiks jei nebus "Reports Data" folderio
+    @RequestMapping(value = "/reports/{reportName}", method = RequestMethod.GET)
+    public HttpEntity<byte[]> downloadReport(@PathVariable("reportName") String fileName) {
         ReportFactory factory = new ReportFactory();
         AttendeeReport report = factory.getReport(fileName);
 
-        if (report != null){
-            report.addAttendees( registrationService.getAllForms());
+        if (report != null) {
+            report.addAttendees(registrationService.getAllForms());
             byte[] document = new byte[0];
             try {
                 document = FileCopyUtils.copyToByteArray(report.getFile());
