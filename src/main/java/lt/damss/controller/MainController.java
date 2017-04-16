@@ -1,7 +1,8 @@
 package lt.damss.controller;
 
 import lt.damss.models.RegistrationForm;
-import lt.damss.reports.*;
+import lt.damss.reports.AttendeeReport;
+import lt.damss.reports.ReportFactory;
 import lt.damss.service.RegistrationService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -25,11 +25,18 @@ public class MainController {
     private RegistrationService registrationService;
 
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
-    public Iterable<RegistrationForm> getAllForms() {
+    @RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<?> getAllForms() {
         Iterable<RegistrationForm> forms = registrationService.getAllForms();
 
-        return forms;
+        HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.add("Content-Type", "application/json; charset=utf-8");
+
+        if(forms.iterator().hasNext()){
+            return new ResponseEntity<Iterable<RegistrationForm>>(forms, HttpStatus.OK);
+        }
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).contentType(MediaType.APPLICATION_JSON_UTF8).body("No element found");
     }
 
 

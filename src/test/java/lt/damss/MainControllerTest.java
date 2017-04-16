@@ -98,6 +98,16 @@ public class MainControllerTest {
 
 
     @Test
+    public void return_empty_brackets_if_no_form() throws Exception {
+
+        this.mockMvc.perform(get("/"))
+                .andExpect(status().isNoContent())
+                .andExpect(content().contentType(contentType))
+                .andExpect(content().string("No element found"));
+    }
+
+
+    @Test
     public void createForm() throws Exception {
 
         RegistrationForm newForm = new RegistrationForm();
