@@ -7,9 +7,13 @@
   "formation": {
   },
   "addons": [
-
+    {
+      "plan": "mailgun"
+    },
+    {
+      "plan": "cleardb"
+    }
   ],
   "buildpacks": [
-
   ]
 }

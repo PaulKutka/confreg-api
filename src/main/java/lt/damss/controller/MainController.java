@@ -1,13 +1,12 @@
 package lt.damss.controller;
 
 import lt.damss.models.RegistrationForm;
-import lt.damss.repositories.RegistrationFormRepository;
-import lt.damss.service.NotificationService;
+import lt.damss.service.RegistrationService;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.mail.MessagingException;
-
 
 /**
  * Created by paulius on 17.3.11.
@@ -16,34 +15,54 @@ import javax.mail.MessagingException;
 @CrossOrigin(origins = "*")
 public class MainController {
 
-    //private Logger logger = LoggerFactory.getLogger(MainController.class);
-
     @Autowired
-    private RegistrationFormRepository repository;
-
-    @Autowired
-    private NotificationService notificationService;
+    private RegistrationService registrationService;
 
 
 
-    @RequestMapping(value = "/", method =  RequestMethod.GET)
-    public Iterable<RegistrationForm> getHelloMessage(){
-        return repository.findAll();
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public Iterable<RegistrationForm> getAllForms() {
+        Iterable<RegistrationForm> forms = registrationService.getAllForms();
+        return forms;
     }
+
 
     @RequestMapping(value = "/post", method = RequestMethod.POST)
-    public RegistrationForm registerForm(@RequestBody RegistrationForm form){
-        repository.save(form);
+    ResponseEntity<?> registerForm(@RequestBody RegistrationForm form) {
 
-        try {
-            notificationService.sendNotification(form);
-        } catch (MessagingException e){
-            // cath error
-            //logger.info("Error Sending Email:" + e.getMessage());
+
+        RegistrationForm result = registrationService.registerForm(form);
+
+
+        if (result != null) {
+            return new ResponseEntity<Object>(result, HttpStatus.OK);
         }
 
+        return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
 
 
-       return form;
     }
+
+    @RequestMapping(value = "/find", method = RequestMethod.POST)
+    ResponseEntity<?> findById(@RequestBody String uniqueCode) {
+
+        String code = "";
+
+        try {
+            JSONObject json = new JSONObject(uniqueCode);
+            code = json.getString("uniqueCode");
+
+        } catch (Exception e) {
+
+        }
+        RegistrationForm result = registrationService.findByUniqueCode(code);
+
+        if (result != null) {
+            return new ResponseEntity<Object>(result, HttpStatus.OK);
+        }
+
+        return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+    }
+
+
 }

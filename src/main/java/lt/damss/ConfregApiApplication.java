@@ -9,4 +9,7 @@ public class ConfregApiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ConfregApiApplication.class, args);
 	}
+
 }
+
+
