@@ -3,6 +3,7 @@
 !gradle/wrapper/gradle-wrapper.jar
 .env
 .DS_Store
+out
 
 ### STS ###
 .apt_generated
