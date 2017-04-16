@@ -24,7 +24,7 @@ public class DocReportGenerator implements AttendeeReport {
 
     DocReportGenerator() {
         this.document = new XWPFDocument();
-        file = new File("Reports Data/messegesReport.docx");
+        file = new File("reports_data/messegesReport.docx");
     }
 
     private void addEntry(String title, String authors, String affiliates, String emails, String reportAbstract) {

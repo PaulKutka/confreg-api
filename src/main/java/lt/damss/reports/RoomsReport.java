@@ -18,7 +18,7 @@ public class RoomsReport implements AttendeeReport {
         sheet = workbook.createSheet();
         this.rowNumber = 0;
 
-        this.file = new File("Reports Data/roomsReport.xlsx");
+        this.file = new File("reports_data/roomsReport.xlsx");
     }
 
     public void addEntry(String name, String surename, String institution, String roomType) {

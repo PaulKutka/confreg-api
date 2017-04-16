@@ -5,8 +5,10 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import javax.print.AttributeException;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * 1 - Emails.
@@ -22,7 +24,7 @@ public class EmailReportGenerator implements AttendeeReport{
         this.workbook = new XSSFWorkbook();
         sheet = workbook.createSheet();
         this.rowNumber = 0;
-        file = new File("Reports Data/emailsReport.xlsx");
+        file = new File("reports_data/emailsReport.xlsx");
     }
 
     private void addEntry(String email){
