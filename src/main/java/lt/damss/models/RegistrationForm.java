@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.Size;
 
 /**
  * Created by paulius on 17.3.12.
@@ -15,10 +16,11 @@ import javax.persistence.Id;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class RegistrationForm {
     @Id
-    @JsonIgnore
+    //@JsonIgnore
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Size(min=2, max=20)
     private String firstName;
     private String lastName;
     private String educationalDegree;

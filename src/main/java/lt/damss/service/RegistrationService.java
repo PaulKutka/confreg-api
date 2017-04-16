@@ -53,11 +53,50 @@ public class RegistrationService {
         }
     }
 
-    public Iterable<RegistrationForm> getAllForms() {
+    public RegistrationForm updateForm(Long id, RegistrationForm form){
+        try {
+            RegistrationForm tempForm = repository.findOne(id);
+            tempForm.setFirstName(form.getFirstName());
+            tempForm.setBillInstitution(form.getBillInstitution());
+            tempForm.setEducationalDegree(form.getEducationalDegree());
+            tempForm.setEmail(form.getEmail());
+            tempForm.setEscortWillParticipateInEvents(form.getEscortWillParticipateInEvents());
+            tempForm.setHasEscort(form.getHasEscort());
+            tempForm.setLastName(form.getLastName());
+            tempForm.setInstitution(form.getBillInstitution());
+            tempForm.setMessageAuthorsAndAffiliations(form.getMessageAuthorsAndAffiliations());
+            tempForm.setMessageName(form.getMessageName());
+            tempForm.setMessageSummary(form.getMessageSummary());
+            tempForm.setNeedsBill(form.getNeedsBill());
+            tempForm.setPhoneNumber(form.getPhoneNumber());
+            tempForm.setNeedsRoom(form.getNeedsRoom());
+            tempForm.setRoomType(form.getRoomType());
 
-        return repository.findAll();
+            //Save form to a database
+            RegistrationForm result = repository.save(tempForm);
+
+            //Send an email ?
+            //notificationService.sendNotification(form);
+
+            return result;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
+    public RegistrationForm deleteForm(Long id){
+        try{
+            RegistrationForm tempForm = repository.findOne(id);
+            repository.delete(id);
+            return tempForm;
+        }catch (Exception e){
+            return null;
+        }
+    }
+
+    public Iterable<RegistrationForm> getAllForms() {
+        return repository.findAll();
+    }
 
     public RegistrationForm findByUniqueCode(String uniqueCode){
 
