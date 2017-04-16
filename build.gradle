@@ -16,19 +16,7 @@ apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 
 
-//task stage(dependsOn: ['build', 'clean'])
-//build.mustRunAfter clean
-//
-//task copyToLib(type: Copy) {
-//	into "$buildDir/lib"
-//	from(configurations.compile)
-//}
-//
-//stage.dependsOn(copyToLib)
-
 test.enabled = false
-
-sourceCompatibility = 1.8
 
 repositories {
 	mavenCentral()
