@@ -42,7 +42,7 @@ public class MainController {
             return new ResponseEntity<Iterable<RegistrationForm>>(forms, HttpStatus.OK);
         }
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).contentType(MediaType.APPLICATION_JSON_UTF8).body("No element found");
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON_UTF8).body("No element found");
     }
 
 
