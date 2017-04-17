@@ -85,5 +85,28 @@ public class RegistrationServiceTest {
 
     }
 
+    @Test
+    public void test_if_updates_a_form() throws Exception {
+        RegistrationForm firstForm = new RegistrationForm();
+        firstForm.setFirstName("Vardas");
+        firstForm.setLastName("Pavarde");
+        firstForm.setEmail("test@test");
+
+        RegistrationForm form = registrationFormRepository.save(firstForm);
+
+        RegistrationForm secondForm = new RegistrationForm();
+        firstForm.setFirstName("Vardenis");
+        firstForm.setLastName("Pavardenis");
+        firstForm.setEmail("testas@testas");
+
+        Long id = form.getId();
+
+        registrationService.updateForm(id, secondForm);
+
+        assertEquals(registrationFormRepository.findOne(id).getFirstName(), secondForm.getFirstName());
+
+
+    }
+
 
 }
