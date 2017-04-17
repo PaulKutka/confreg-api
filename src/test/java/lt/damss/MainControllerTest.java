@@ -3,6 +3,7 @@ package lt.damss;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lt.damss.controller.MainController;
 import lt.damss.models.RegistrationForm;
+import lt.damss.service.NotificationService;
 import lt.damss.service.RegistrationService;
 import org.apache.catalina.filters.CorsFilter;
 import org.junit.Before;
@@ -15,11 +16,13 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mail.MailException;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import javax.mail.MessagingException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
@@ -50,6 +53,9 @@ public class MainControllerTest {
 
     @Mock
     private RegistrationService registrationService;
+
+    @Mock
+    private NotificationService notificationService;
 
     @Autowired
     private ObjectMapper mapper;
@@ -132,6 +138,31 @@ public class MainControllerTest {
                 .andExpect(content().json(expectedJson));
 
 
+    }
+
+
+    @Test
+    public void test_if_500_is_returned_upon_failed_mail_send() throws Exception{
+
+
+
+        RegistrationForm newForm = new RegistrationForm();
+        newForm.setFirstName("Vardas");
+        newForm.setLastName("Pavarde");
+        newForm.setEmail("test@test");
+
+        String bookmarkJson = mapper.writeValueAsString(newForm);
+
+        Mockito.when(registrationService.registerForm(any())).thenReturn(newForm);
+
+        Mockito.doThrow(MessagingException.class).when(notificationService).sendNotification(any());
+
+
+        this.mockMvc.perform(post("/post")
+                .contentType(contentType)
+                .content(bookmarkJson))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("There was a problem with sending a mail"));
     }
 
 

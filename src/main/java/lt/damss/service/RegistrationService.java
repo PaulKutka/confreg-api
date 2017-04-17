@@ -44,9 +44,6 @@ public class RegistrationService {
             //Save form to a database
             RegistrationForm result = repository.save(form);
 
-            //Send an email
-            notificationService.sendNotification(form);
-
             return result;
         } catch (Exception e) {
             return null;

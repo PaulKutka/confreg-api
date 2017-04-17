@@ -3,14 +3,17 @@ package lt.damss.controller;
 import lt.damss.models.RegistrationForm;
 import lt.damss.reports.AttendeeReport;
 import lt.damss.reports.ReportFactory;
+import lt.damss.service.NotificationService;
 import lt.damss.service.RegistrationService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.mail.MailException;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.io.IOException;
 
@@ -20,6 +23,9 @@ import java.io.IOException;
 @RestController
 @CrossOrigin(origins = "*")
 public class MainController {
+
+    @Autowired
+    private NotificationService notificationService;
 
     @Autowired
     private RegistrationService registrationService;
@@ -32,7 +38,7 @@ public class MainController {
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.add("Content-Type", "application/json; charset=utf-8");
 
-        if(forms.iterator().hasNext()){
+        if (forms.iterator().hasNext()) {
             return new ResponseEntity<Iterable<RegistrationForm>>(forms, HttpStatus.OK);
         }
 
@@ -46,17 +52,35 @@ public class MainController {
 
         //TODO: RegistrationForm.java sudet likusias validacijas
         if (bindingResult.hasErrors()) {
-            return null;
+            return new ResponseEntity<Object>(HttpStatus.BAD_REQUEST);
         }
-        
-        RegistrationForm result = registrationService.registerForm(form);
+        try {
+            //Add form to a database
+            RegistrationForm result = registrationService.registerForm(form);
 
+            if (result == null) {
+                return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+            }
 
-        if (result != null) {
+            //Send user a notification
+            notificationService.sendNotification(form);
+
             return new ResponseEntity<Object>(result, HttpStatus.OK);
-        }
 
-        return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+
+        } catch (Exception e) {
+            if (e instanceof MailException || e instanceof MessagingException)
+                return ResponseEntity
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .body("There was a problem with sending a mail");
+            else
+                return ResponseEntity
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .body("Internal server error");
+
+        }
 
 
     }
@@ -64,17 +88,17 @@ public class MainController {
     @RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)
     ResponseEntity<?> updateForm(@PathVariable("id") Long id,
                                  @RequestBody @Valid RegistrationForm form,
-                                 BindingResult bindingResult){
+                                 BindingResult bindingResult) {
 
 
-        if (bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             return new ResponseEntity<Object>(HttpStatus.valueOf(400));
 
         }
 
         RegistrationForm result = registrationService.updateForm(id, form);
 
-        if(result != null){
+        if (result != null) {
             return new ResponseEntity<Object>(result, HttpStatus.OK);
         }
 
@@ -141,4 +165,6 @@ public class MainController {
         }
         return null;
     }
+
 }
+
