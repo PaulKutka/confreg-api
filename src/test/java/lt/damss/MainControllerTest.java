@@ -28,6 +28,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -131,6 +132,51 @@ public class MainControllerTest {
                 .andExpect(content().json(expectedJson));
 
 
+    }
+
+
+    @Test
+    public void update_form_success() throws Exception {
+
+        RegistrationForm newForm = new RegistrationForm();
+        newForm.setFirstName("Vardas");
+        newForm.setLastName("Pavarde");
+        newForm.setEmail("test@test");
+
+        String bookmarkJson = mapper.writeValueAsString(newForm);
+
+        String expectedJson = mapper.writeValueAsString(newForm);
+
+        Mockito.when(registrationService.updateForm(any(),any())).thenReturn(newForm);
+
+
+        this.mockMvc.perform(put("/update/1")
+                .contentType(contentType)
+                .content(bookmarkJson))
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedJson));
+
+    }
+
+    @Test
+    public void update_form_wrong_id() throws Exception {
+
+        RegistrationForm newForm = new RegistrationForm();
+        newForm.setFirstName("Vardas");
+        newForm.setLastName("Pavarde");
+        newForm.setEmail("test@test");
+
+        String bookmarkJson = mapper.writeValueAsString(newForm);
+
+
+        Mockito.when(registrationService.updateForm(any(),any())).thenReturn(null);
+
+
+        this.mockMvc.perform(put("/update/1")
+                .contentType(contentType)
+                .content(bookmarkJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Form not found. Provided wrong id."));
     }
 
     @Test

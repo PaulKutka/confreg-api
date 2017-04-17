@@ -48,6 +48,7 @@ public class MainController {
         if (bindingResult.hasErrors()) {
             return null;
         }
+        
         RegistrationForm result = registrationService.registerForm(form);
 
 
@@ -70,8 +71,15 @@ public class MainController {
             return new ResponseEntity<Object>(HttpStatus.valueOf(400));
 
         }
+
         RegistrationForm result = registrationService.updateForm(id, form);
-        return new ResponseEntity<Object>(result, HttpStatus.OK);
+
+        if(result != null){
+            return new ResponseEntity<Object>(result, HttpStatus.OK);
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON_UTF8).body("Form not found. Provided wrong id.");
+
 
     }
 
