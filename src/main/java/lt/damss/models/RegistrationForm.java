@@ -3,11 +3,7 @@ package lt.damss.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.validation.constraints.Size;
+import javax.persistence.*;
 
 /**
  * Created by paulius on 17.3.12.
@@ -20,7 +16,6 @@ public class RegistrationForm {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Size(min=2, max=20)
     private String firstName;
     private String lastName;
     private String educationalDegree;
@@ -30,6 +25,8 @@ public class RegistrationForm {
 
     private String messageName;
     private String messageAuthorsAndAffiliations;
+
+    @Column( length = 100000 )
     private String messageSummary;
 
     private String needsRoom;

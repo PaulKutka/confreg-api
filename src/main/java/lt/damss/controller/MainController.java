@@ -58,9 +58,6 @@ public class MainController {
             //Add form to a database
             RegistrationForm result = registrationService.registerForm(form);
 
-            if (result == null) {
-                return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
-            }
 
             //Send user a notification
             notificationService.sendNotification(form);
