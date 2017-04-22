@@ -42,7 +42,7 @@ public class MainController {
             return new ResponseEntity<Iterable<RegistrationForm>>(forms, HttpStatus.OK);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON_UTF8).body("No element found");
+        return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON_UTF8).build();
     }
 
 
@@ -96,13 +96,27 @@ public class MainController {
 
         }
 
-        RegistrationForm result = registrationService.updateForm(id, form);
 
-        if (result != null) {
+
+        try {
+            RegistrationForm result = registrationService.updateForm(id, form);
+            notificationService.sendUpdateNotification(result);
             return new ResponseEntity<Object>(result, HttpStatus.OK);
+
+        } catch (Exception e) {
+            if (e instanceof MailException || e instanceof MessagingException)
+                return ResponseEntity
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .body("There was a problem with sending a mail");
+            else
+                return ResponseEntity
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .body("Internal server error");
+
         }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_JSON_UTF8).body("Form not found. Provided wrong id.");
 
 
     }
@@ -112,7 +126,8 @@ public class MainController {
 
         try {
             RegistrationForm result = registrationService.deleteForm(id);
-            return new ResponseEntity<Object>(result, HttpStatus.OK);
+            notificationService.sendDeletedNotification(result.getEmail());
+            return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON_UTF8).body("Form deleted successfully");
 
         } catch (Exception e) {
 
@@ -133,13 +148,33 @@ public class MainController {
         } catch (Exception e) {
 
         }
-        RegistrationForm result = registrationService.findByUniqueCode(code);
+        
+        try {
+            //Add form to a database
+            RegistrationForm result = registrationService.findByUniqueCode(code);
 
-        if (result != null) {
+            if (result == null) {
+                return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+            }
+
+
             return new ResponseEntity<Object>(result, HttpStatus.OK);
+
+
+        } catch (Exception e) {
+            if (e instanceof MailException || e instanceof MessagingException)
+                return ResponseEntity
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .body("There was a problem with sending a mail");
+            else
+                return ResponseEntity
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .body("Internal server error");
+
         }
 
-        return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
     }
 
     //TODO: repotu generavimas neveiks jei nebus "Reports Data" folderio

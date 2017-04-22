@@ -60,7 +60,7 @@ public class RegistrationService {
             tempForm.setEscortWillParticipateInEvents(form.getEscortWillParticipateInEvents());
             tempForm.setHasEscort(form.getHasEscort());
             tempForm.setLastName(form.getLastName());
-            tempForm.setInstitution(form.getBillInstitution());
+            tempForm.setInstitution(form.getInstitution());
             tempForm.setMessageAuthorsAndAffiliations(form.getMessageAuthorsAndAffiliations());
             tempForm.setMessageName(form.getMessageName());
             tempForm.setMessageSummary(form.getMessageSummary());
