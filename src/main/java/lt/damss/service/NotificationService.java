@@ -28,13 +28,8 @@ public class NotificationService {
     @Autowired
     public NotificationService() {}
 
-    public void sendNotification(RegistrationForm form) throws MailException, MessagingException{
+    public void sendNotification(RegistrationForm form) throws MailException{
 
-//        SimpleMailMessage mail = new SimpleMailMessage();
-//        mail.setTo(form.getEmail());
-//        mail.setFrom("gitanakas@gmail.com");
-//        mail.setSubject("Toys for Shots is coming soon");
-//        mail.setText("this is cool lel");
 
 
         // Prepare the evaluation context
@@ -48,22 +43,95 @@ public class NotificationService {
         ctx.setVariable("messageName", form.getMessageName());
         ctx.setVariable("messageAuthorsAndAffiliations", form.getMessageAuthorsAndAffiliations());
         ctx.setVariable("messageSummary", form.getMessageSummary());
+        ctx.setVariable("uniqueCode", form.getUniqueCode());
 
 
 
         final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
         final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, "UTF-8");
-        message.setFrom("sender@example.com");
-        message.setTo(form.getEmail());
-        message.setSubject("Registracijos patvirtinimas");
 
-        final String htmlContent = this.templateEngine.process("email-template", ctx);
-        message.setText(htmlContent, true /* isHtml */);
+        try {
+            message.setFrom("sender@example.com");
+            message.setTo(form.getEmail());
+            message.setSubject("Registracijos patvirtinimas");
+
+            final String htmlContent = this.templateEngine.process("email-template", ctx);
+            message.setText(htmlContent, true /* isHtml */);
+        } catch (MessagingException e){
+
+        }
+        this.mailSender.send(mimeMessage);
+
+    }
+
+    public void sendUpdateNotification(RegistrationForm form) throws MailException{
+
+
+
+        // Prepare the evaluation context
+        final Context ctx = new Context();
+        ctx.setVariable("firstName", form.getFirstName());
+        ctx.setVariable("lastName", form.getLastName());
+        ctx.setVariable("educationalDegree", form.getEducationalDegree());
+        ctx.setVariable("email", form.getEmail());
+        ctx.setVariable("phoneNumber", form.getPhoneNumber());
+        ctx.setVariable("institution", form.getInstitution());
+        ctx.setVariable("messageName", form.getMessageName());
+        ctx.setVariable("messageAuthorsAndAffiliations", form.getMessageAuthorsAndAffiliations());
+        ctx.setVariable("messageSummary", form.getMessageSummary());
+        ctx.setVariable("uniqueCode", form.getUniqueCode());
+
+
+
+        final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
+        final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, "UTF-8");
+
+        try {
+            message.setFrom("sender@example.com");
+            message.setTo(form.getEmail());
+            message.setSubject("Registracijos patvirtinimas");
+
+            final String htmlContent = this.templateEngine.process("update-template", ctx);
+            message.setText(htmlContent, true /* isHtml */);
+        } catch (MessagingException e){
+
+        }
+        this.mailSender.send(mimeMessage);
+
+    }
+
+
+
+    public void sendDeletedNotification(String email) throws MailException{
+
+
+
+//        // Prepare the evaluation context
+        final Context ctx = new Context();
+//        ctx.setVariable("email", form.getEmail());
+
+
+
+
+        final MimeMessage mimeMessage = this.mailSender.createMimeMessage();
+        final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, "UTF-8");
+
+        try {
+            message.setFrom("sender@example.com");
+            message.setTo(email);
+            message.setSubject("Ištrynimo patvirtinimas");
+
+            final String htmlContent = this.templateEngine.process("deleted-template", ctx);
+            message.setText(htmlContent, true /* isHtml */);
+        } catch (MessagingException e){
+
+        }
 
         this.mailSender.send(mimeMessage);
 
-
     }
+
+
 
 
 

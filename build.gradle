@@ -1,27 +1,22 @@
 buildscript {
-	ext {
-		springBootVersion = '2.0.0.BUILD-SNAPSHOT'
-	}
 	repositories {
 		mavenCentral()
 		maven { url "https://repo.spring.io/snapshot" }
 		maven { url "https://repo.spring.io/milestone" }
 	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-	}
+
+}
+
+plugins {
+	id 'org.springframework.boot' version '1.5.2.RELEASE'
 }
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 
-jar {
-	baseName = 'confreg-api'
-	version = '0.0.1-SNAPSHOT'
-}
 
-sourceCompatibility = 1.8
+test.enabled = false
 
 repositories {
 	mavenCentral()
@@ -31,12 +26,26 @@ repositories {
 
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-jdbc')
-	compile('org.springframework.boot:spring-boot-starter-web')
-	compile('org.springframework.boot:spring-boot-starter-data-jpa')
-	compile('org.springframework.boot:spring-boot-starter-mail')
-	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
+	compile (group: 'org.apache.poi', name: 'poi', version: '3.15')
+	compile group: 'org.apache.poi', name: 'poi-ooxml', version: '3.15'
+	compile group: 'org.apache.poi', name: 'poi-ooxml-schemas', version: '3.15'
+	compile group: 'org.apache.poi', name: 'poi-scratchpad', version: '3.15'
+	compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
+	compile group: 'org.apache.xmlbeans', name: 'xmlbeans', version: '2.6.0'
+	compile('org.springframework.boot:spring-boot-starter-jdbc:1.5.2.RELEASE')
+	compile('org.springframework.boot:spring-boot-starter-web:1.5.2.RELEASE')
+	compile('org.springframework.boot:spring-boot-starter-data-jpa:1.5.2.RELEASE')
+	compile('org.springframework.boot:spring-boot-starter-mail:1.5.2.RELEASE')
+	compile('org.springframework.boot:spring-boot-starter-thymeleaf:1.5.2.RELEASE')
 	compile ('javax.mail:mail:1.4.7')
-	runtime('mysql:mysql-connector-java')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+	compile('org.json:json:20160810')
+	compile('mysql:mysql-connector-java:6.0.6')
+	testCompile('org.springframework.boot:spring-boot-starter-test:1.5.2.RELEASE')
+	testCompile('org.mockito:mockito-core:2.+')
+}
+
+
+jar {
+	baseName = 'confreg-api'
+	version = '0.0.1-SNAPSHOT'
 }
